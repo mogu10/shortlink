@@ -4,10 +4,8 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -66,7 +64,10 @@ func getLink(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	http.Redirect(writer, request, string(link), http.StatusTemporaryRedirect)
+	writer.WriteHeader(http.StatusTemporaryRedirect)
+	writer.Header().Add("Content-Type", "text/plain")
+	writer.Write(link)
+
 }
 
 func createShortLink(body []byte) ([]byte, error) {
@@ -92,11 +93,7 @@ func saveLink(hash string, body []byte) error {
 func findShortLink(path []byte) ([]byte, error) {
 
 	for key, value := range links {
-		fmt.Fprintln(os.Stdout, value)
-		fmt.Fprintln(os.Stdout, key)
-		fmt.Fprintln(os.Stdout, string(path))
 		if value == string(path) {
-
 			return []byte(key), nil
 		}
 	}
