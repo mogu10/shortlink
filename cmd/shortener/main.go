@@ -1,11 +1,17 @@
 package main
 
 import (
-	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"strings"
 )
+
+var links = make(map[string]string)
 
 func main() {
 	mux := http.NewServeMux()
@@ -39,7 +45,7 @@ func postLink(writer http.ResponseWriter, request *http.Request) {
 
 func getLink(writer http.ResponseWriter, request *http.Request) {
 
-	//провяем, что метод POST
+	//провяем, что метод GET
 	if request.Method != http.MethodGet {
 		http.Error(writer, "Only GET allowed", http.StatusBadRequest)
 		return
@@ -47,6 +53,8 @@ func getLink(writer http.ResponseWriter, request *http.Request) {
 
 	//вытаскиваем path из урла
 	path := request.URL.Path
+	path = strings.ReplaceAll(path, "/", "")
+
 	if len(path) == 0 {
 		http.Error(writer, "Path is empty", http.StatusBadRequest)
 		return
@@ -58,21 +66,39 @@ func getLink(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	writer.Header().Add("Content-Type", "text/plain")
-	writer.Write(link)
+	http.Redirect(writer, request, string(link), http.StatusTemporaryRedirect)
 }
 
 func createShortLink(body []byte) ([]byte, error) {
-	if bytes.Equal(body, []byte("https://practicum.yandex.ru/")) {
-		return []byte("EwHXdJfB"), nil
+
+	md5Hash := md5.Sum(body)
+	hash := hex.EncodeToString(md5Hash[:])
+	shortHash := hash[0:8]
+
+	err := saveLink(shortHash, body)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, errors.New("invalid short link")
+	return []byte(links[string(body)]), nil
+}
+
+func saveLink(hash string, body []byte) error {
+	links[string(body)] = hash
+
+	return nil
 }
 
 func findShortLink(path []byte) ([]byte, error) {
-	if bytes.Equal(path, []byte("/EwHXdJfB/")) {
-		return []byte("https://practicum.yandex.ru/"), nil
+
+	for key, value := range links {
+		fmt.Fprintln(os.Stdout, value)
+		fmt.Fprintln(os.Stdout, key)
+		fmt.Fprintln(os.Stdout, string(path))
+		if value == string(path) {
+
+			return []byte(key), nil
+		}
 	}
 
 	return nil, errors.New("invalid path")
