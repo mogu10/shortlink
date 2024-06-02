@@ -69,9 +69,10 @@ func getLink(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	writer.WriteHeader(http.StatusTemporaryRedirect)
-	writer.Header().Add("Content-Type", "text/plain")
-	writer.Write(link)
+	http.Redirect(writer, request, string(link), http.StatusTemporaryRedirect)
+	//writer.WriteHeader(http.StatusTemporaryRedirect)
+	//writer.Header().Add("Content-Type", "text/plain")
+	//writer.Write(link)
 
 }
 
