@@ -16,7 +16,10 @@ func main() {
 	mux.HandleFunc("/", postLink)
 	mux.HandleFunc("/{id}/", getLink)
 
-	http.ListenAndServe(":8080", mux)
+	err := http.ListenAndServe(":8080", mux)
+	if err != nil {
+		return
+	}
 }
 
 func postLink(writer http.ResponseWriter, request *http.Request) {
@@ -37,6 +40,7 @@ func postLink(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 	}
 
+	writer.WriteHeader(http.StatusCreated)
 	writer.Header().Add("Content-Type", "text/plain")
 	writer.Write(short)
 }
