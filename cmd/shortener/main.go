@@ -14,7 +14,7 @@ var links = make(map[string]string)
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", postLink)
-	mux.HandleFunc("/{id}/", getLink)
+	mux.HandleFunc("/{id}", getLink)
 
 	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
