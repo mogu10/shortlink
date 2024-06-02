@@ -42,7 +42,8 @@ func postLink(writer http.ResponseWriter, request *http.Request) {
 
 	writer.WriteHeader(http.StatusCreated)
 	writer.Header().Add("Content-Type", "text/plain")
-	writer.Write(short)
+	link := "http://localhost:8080/" + (string(short))
+	writer.Write([]byte(link))
 }
 
 func getLink(writer http.ResponseWriter, request *http.Request) {
