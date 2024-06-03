@@ -31,6 +31,7 @@ func postLink(writer http.ResponseWriter, request *http.Request) {
 
 	//вытаскиваем body из реквеста
 	body, err := io.ReadAll(request.Body)
+
 	if err != nil {
 		http.Error(writer, "Something wrong with body", http.StatusBadRequest)
 	}
@@ -70,9 +71,6 @@ func getLink(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	http.Redirect(writer, request, string(link), http.StatusTemporaryRedirect)
-	//writer.WriteHeader(http.StatusTemporaryRedirect)
-	//writer.Header().Add("Content-Type", "text/plain")
-	//writer.Write(link)
 
 }
 
