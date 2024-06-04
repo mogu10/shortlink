@@ -36,14 +36,8 @@ func TestPostLink(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			body := strings.NewReader(test.url)
-
-			request := httptest.NewRequest(http.MethodPost, "/", body)
-			request.Header.Set("Content-Type", "text/plain")
-
-			// создаём новый Recorder
-			w := httptest.NewRecorder()
-			postLink(w, request)
+			// делаем тестовый POST запрос
+			w, err := createPostLinkRequest(test.url)
 			res := w.Result()
 
 			// проверяем код ответа
@@ -87,17 +81,10 @@ func TestGetLink(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			// делаем тестовый POST запрос
+			w, err := createPostLinkRequest(test.url)
 
-			body := strings.NewReader(test.url)
-
-			request := httptest.NewRequest(http.MethodPost, "/", body)
-			request.Header.Set("Content-Type", "text/plain")
-
-			// создаём новый Recorder
-			w := httptest.NewRecorder()
-			postLink(w, request)
-
-			request = httptest.NewRequest(http.MethodGet, "/"+test.short, nil)
+			request := httptest.NewRequest(http.MethodGet, "/"+test.short, nil)
 			request.Header.Set("Content-Type", "text/plain")
 
 			// создаём новый Recorder
@@ -112,7 +99,7 @@ func TestGetLink(t *testing.T) {
 			defer res.Body.Close()
 			resBody, err := io.ReadAll(res.Body)
 
-			//assert.Equal(t, test.short, string(resBody))
+			//проверяем, что в теле содержится исходная ссылка
 			assert.Contains(t, string(resBody), test.url)
 
 			header := w.Header()
@@ -121,4 +108,15 @@ func TestGetLink(t *testing.T) {
 			assert.Equal(t, test.want.contentType, header.Get("Content-Type"))
 		})
 	}
+}
+
+func createPostLinkRequest(url string) (*httptest.ResponseRecorder, error) {
+	body := strings.NewReader(url)
+	request := httptest.NewRequest(http.MethodPost, "/", body)
+	request.Header.Set("Content-Type", "text/plain")
+
+	w := httptest.NewRecorder()
+	postLink(w, request)
+
+	return w, nil
 }
