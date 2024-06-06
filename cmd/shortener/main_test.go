@@ -38,6 +38,10 @@ func TestPostLink(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			// делаем тестовый POST запрос
 			w, err := createPostLinkRequest(test.url)
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			res := w.Result()
 
 			// проверяем код ответа
@@ -82,13 +86,17 @@ func TestGetLink(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// делаем тестовый POST запрос
-			w, err := createPostLinkRequest(test.url)
+			_, err := createPostLinkRequest(test.url)
+
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			request := httptest.NewRequest(http.MethodGet, "/"+test.short, nil)
 			request.Header.Set("Content-Type", "text/plain")
 
 			// создаём новый Recorder
-			w = httptest.NewRecorder()
+			w := httptest.NewRecorder()
 			getLink(w, request)
 			res := w.Result()
 
