@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"github.com/go-chi/chi/v5"
 	"io"
 	"net/http"
 	"strings"
@@ -11,15 +12,16 @@ import (
 
 var links = make(map[string]string)
 
-func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", postLink)
-	mux.HandleFunc("/{id}", getLink)
+const host string = "http://localhost:8080/"
 
-	err := http.ListenAndServe(":8080", mux)
-	if err != nil {
-		return
-	}
+func main() {
+
+	router := chi.NewRouter()
+
+	router.Post("/", postLink)
+	router.Get("/{id}", getLink)
+
+	http.ListenAndServe(":8080", router)
 }
 
 func postLink(writer http.ResponseWriter, request *http.Request) {
@@ -41,9 +43,10 @@ func postLink(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 	}
 
+	link := host + (string(short))
+
 	writer.WriteHeader(http.StatusCreated)
 	writer.Header().Add("Content-Type", "text/plain")
-	link := "http://localhost:8080/" + (string(short))
 	writer.Write([]byte(link))
 }
 
