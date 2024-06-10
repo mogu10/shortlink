@@ -4,24 +4,34 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	"github.com/go-chi/chi/v5"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/go-chi/chi/v5"
+
+	"github.com/mogu10/shortlink/internal/app/config"
 )
 
 var links = make(map[string]string)
 
-const host string = "http://localhost:8080/"
+var serverAddress string
+
+var shortAddress string
 
 func main() {
+
+	options := config.ParseArgs()
+
+	serverAddress = options.ServerUrl
+	shortAddress = options.ShortUrl
 
 	router := chi.NewRouter()
 
 	router.Post("/", postLink)
 	router.Get("/{id}", getLink)
 
-	http.ListenAndServe(":8080", router)
+	http.ListenAndServe(serverAddress, router)
 }
 
 func postLink(writer http.ResponseWriter, request *http.Request) {
@@ -43,7 +53,7 @@ func postLink(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 	}
 
-	link := host + (string(short))
+	link := shortAddress + (string(short))
 
 	writer.WriteHeader(http.StatusCreated)
 	writer.Header().Add("Content-Type", "text/plain")
