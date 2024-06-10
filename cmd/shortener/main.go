@@ -4,13 +4,12 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"github.com/mogu10/shortlink/internal/app/config"
 	"io"
 	"net/http"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-
-	"github.com/mogu10/shortlink/internal/app/config"
 )
 
 var links = make(map[string]string)
@@ -20,11 +19,8 @@ var serverAddress string
 var shortAddress string
 
 func main() {
-
-	options := config.ParseArgs()
-
-	serverAddress = options.ServerUrl
-	shortAddress = options.ShortUrl
+	// устанавливем адреса для сервиса из аргументов командной строки
+	determineHosts()
 
 	router := chi.NewRouter()
 
@@ -35,13 +31,13 @@ func main() {
 }
 
 func postLink(writer http.ResponseWriter, request *http.Request) {
-	//провяем, что метод POST
+	// провяем, что метод POST
 	if request.Method != http.MethodPost {
 		http.Error(writer, "Only POST allowed", http.StatusBadRequest)
 		return
 	}
 
-	//вытаскиваем body из реквеста
+	// вытаскиваем body из реквеста
 	body, err := io.ReadAll(request.Body)
 
 	if err != nil {
@@ -62,13 +58,13 @@ func postLink(writer http.ResponseWriter, request *http.Request) {
 
 func getLink(writer http.ResponseWriter, request *http.Request) {
 
-	//провяем, что метод GET
+	// провяем, что метод GET
 	if request.Method != http.MethodGet {
 		http.Error(writer, "Only GET allowed", http.StatusBadRequest)
 		return
 	}
 
-	//вытаскиваем path из урла
+	// вытаскиваем path из урла
 	path := request.URL.Path
 	path = strings.ReplaceAll(path, "/", "")
 
@@ -116,4 +112,11 @@ func findShortLink(path []byte) ([]byte, error) {
 	}
 
 	return nil, errors.New("invalid path")
+}
+
+func determineHosts() {
+	options := config.ParseArgs()
+
+	serverAddress = options.ServerUrl
+	shortAddress = options.ShortUrl
 }

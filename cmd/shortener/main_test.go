@@ -37,6 +37,7 @@ func TestPostLink(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			determineHosts()
 			// делаем тестовый POST запрос
 			w, err := createPostLinkRequest(test.url)
 			if err != nil {
@@ -86,6 +87,7 @@ func TestGetLink(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			determineHosts()
 			// делаем тестовый POST запрос
 			_, err := createPostLinkRequest(test.url)
 
