@@ -6,19 +6,19 @@ import (
 )
 
 type Options struct {
-	ServerUrl string
-	ShortUrl  string
+	ServerURL string
+	ShortURL  string
 }
 
 func ParseArgs() *Options {
 	options := new(Options)
 
 	if flag.Lookup("a") == nil {
-		flag.StringVar(&options.ServerUrl, "a", "localhost:8080", "адрес запуска HTTP-сервера")
+		flag.StringVar(&options.ServerURL, "a", "localhost:8080", "адрес запуска HTTP-сервера")
 	}
 
 	if flag.Lookup("b") == nil {
-		flag.StringVar(&options.ShortUrl, "b", "http://localhost:8080/", "базовый адрес результирующего шортлинка")
+		flag.StringVar(&options.ShortURL, "b", "http://localhost:8080/", "базовый адрес результирующего шортлинка")
 	}
 
 	flag.Parse()
@@ -29,11 +29,11 @@ func ParseArgs() *Options {
 }
 
 func validateOptions(options *Options) {
-	if !strings.HasSuffix(options.ShortUrl, "/") {
-		options.ShortUrl += "/"
+	if !strings.HasSuffix(options.ShortURL, "/") {
+		options.ShortURL += "/"
 	}
 
-	if !strings.HasPrefix(options.ShortUrl, "http://") {
-		options.ShortUrl = "http://" + options.ShortUrl
+	if !strings.HasPrefix(options.ShortURL, "http://") {
+		options.ShortURL = "http://" + options.ShortURL
 	}
 }

@@ -4,12 +4,13 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	"github.com/mogu10/shortlink/internal/app/config"
 	"io"
 	"net/http"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
+
+	"github.com/mogu10/shortlink/internal/app/config"
 )
 
 var links = make(map[string]string)
@@ -116,6 +117,6 @@ func findShortLink(path []byte) ([]byte, error) {
 func DetermineHosts() {
 	options := config.ParseArgs()
 
-	serverAddress = options.ServerUrl
-	shortAddress = options.ShortUrl
+	serverAddress = options.ServerURL
+	shortAddress = options.ShortURL
 }
