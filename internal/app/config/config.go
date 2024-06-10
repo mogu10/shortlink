@@ -1,6 +1,9 @@
 package config
 
-import "flag"
+import (
+	"flag"
+	"strings"
+)
 
 type Options struct {
 	ServerUrl string
@@ -20,5 +23,17 @@ func ParseArgs() *Options {
 
 	flag.Parse()
 
+	validateOptions(options)
+
 	return options
+}
+
+func validateOptions(options *Options) {
+	if !strings.HasSuffix(options.ShortUrl, "/") {
+		options.ShortUrl += "/"
+	}
+
+	if !strings.HasPrefix(options.ShortUrl, "http://") {
+		options.ShortUrl = "http://" + options.ShortUrl
+	}
 }
