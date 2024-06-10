@@ -15,12 +15,11 @@ import (
 var links = make(map[string]string)
 
 var serverAddress string
-
 var shortAddress string
 
 func main() {
 	// устанавливем адреса для сервиса из аргументов командной строки
-	determineHosts()
+	DetermineHosts()
 
 	router := chi.NewRouter()
 
@@ -114,7 +113,7 @@ func findShortLink(path []byte) ([]byte, error) {
 	return nil, errors.New("invalid path")
 }
 
-func determineHosts() {
+func DetermineHosts() {
 	options := config.ParseArgs()
 
 	serverAddress = options.ServerUrl
