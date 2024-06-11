@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"os"
 	"strings"
 )
 
@@ -10,22 +11,38 @@ type Options struct {
 	ShortURL  string
 }
 
-func ParseArgs() *Options {
+func Get() *Options {
 	options := new(Options)
-
-	if flag.Lookup("a") == nil {
-		flag.StringVar(&options.ServerURL, "a", "localhost:8080", "адрес запуска HTTP-сервера")
-	}
-
-	if flag.Lookup("b") == nil {
-		flag.StringVar(&options.ShortURL, "b", "http://localhost:8080/", "базовый адрес результирующего шортлинка")
-	}
-
-	flag.Parse()
+	options.ShortURL = getShURL()
+	options.ServerURL = getSrvURL()
 
 	validateOptions(options)
 
 	return options
+}
+
+func getShURL() string {
+	s, f := os.LookupEnv("SERVER_ADDRESS")
+	if f && s != "" {
+		return s
+	}
+
+	flag.StringVar(&s, "b", "http://localhost:8080/", "базовый адрес результирующего шортлинка")
+	flag.Parse()
+
+	return s
+}
+
+func getSrvURL() string {
+	s, f := os.LookupEnv("SERVER_ADDRESS")
+	if f && s != "" {
+		return s
+	}
+
+	flag.StringVar(&s, "a", "localhost:8080", "адрес запуска HTTP-сервера")
+	flag.Parse()
+
+	return s
 }
 
 func validateOptions(options *Options) {

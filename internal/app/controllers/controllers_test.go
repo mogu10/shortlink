@@ -1,4 +1,4 @@
-package main
+package controllers
 
 import (
 	"io"
@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+var a = App{ShortAddress: "http://localhost:8080/"}
 
 func TestPostLink(t *testing.T) {
 	type want struct {
@@ -37,7 +39,6 @@ func TestPostLink(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			DetermineHosts()
 			// делаем тестовый POST запрос
 			w, err := createPostLinkRequest(test.url)
 			if err != nil {
@@ -87,7 +88,6 @@ func TestGetLink(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			DetermineHosts()
 			// делаем тестовый POST запрос
 			_, err := createPostLinkRequest(test.url)
 
@@ -100,7 +100,9 @@ func TestGetLink(t *testing.T) {
 
 			// создаём новый Recorder
 			w := httptest.NewRecorder()
-			getLink(w, request)
+
+			a.HandlerGet(w, request)
+
 			res := w.Result()
 
 			// проверяем код ответа
@@ -127,7 +129,8 @@ func createPostLinkRequest(url string) (*httptest.ResponseRecorder, error) {
 	request.Header.Set("Content-Type", "text/plain")
 
 	w := httptest.NewRecorder()
-	postLink(w, request)
+
+	a.HandlerPost(w, request)
 
 	return w, nil
 }
