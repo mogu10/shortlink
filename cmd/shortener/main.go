@@ -8,6 +8,7 @@ import (
 
 func main() {
 	options := config.Get()
+	//options := config.ParseArgs()
 
 	a := controllers.New(options.ShortURL)
 	s := server.New(options.ServerURL, a)

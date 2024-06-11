@@ -15,7 +15,7 @@ type Server struct {
 func (s *Server) Run() {
 	router := chi.NewRouter()
 
-	router.Post("/", s.App.HandlerPost) // не уверен в таком решении
+	router.Post("/", s.App.HandlerPost)
 	router.Get("/{id}", s.App.HandlerGet)
 
 	http.ListenAndServe(s.ServerAddress, router)
