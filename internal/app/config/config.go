@@ -17,15 +17,19 @@ func Get() *Options {
 	options.ShortURL = getShURL()
 	options.ServerURL = getSrvURL()
 
-	if options.ServerURL == "" {
-		flag.StringVar(&options.ServerURL, "a", "localhost:8080", "адрес запуска HTTP-сервера")
-	}
+	serv := ""
+	short := ""
+	flag.StringVar(&serv, "a", "localhost:80", "адрес запуска HTTP-сервера")
+	flag.StringVar(&short, "b", "http://localhost:8080/", "базовый адрес результирующего шортлинка")
+	flag.Parse()
 
 	if options.ShortURL == "" {
-		flag.StringVar(&options.ShortURL, "b", "http://localhost:8080/", "базовый адрес результирующего шортлинка")
+		options.ShortURL = short
 	}
 
-	flag.Parse()
+	if options.ServerURL == "" {
+		options.ServerURL = serv
+	}
 
 	fmt.Println(options.ServerURL)
 	fmt.Println(options.ShortURL)
