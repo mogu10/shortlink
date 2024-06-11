@@ -19,7 +19,7 @@ func Get() *Options {
 
 	serv := ""
 	short := ""
-	flag.StringVar(&serv, "a", "localhost:80", "адрес запуска HTTP-сервера")
+	flag.StringVar(&serv, "a", "localhost:8080", "адрес запуска HTTP-сервера")
 	flag.StringVar(&short, "b", "http://localhost:8080/", "базовый адрес результирующего шортлинка")
 	flag.Parse()
 
