@@ -1,29 +1,32 @@
 package server
 
 import (
-	"github.com/mogu10/shortlink/internal/app/controllers"
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
+	"github.com/mogu10/shortlink/internal/app/controllers"
+	"log"
+	"net/http"
 )
 
 type Server struct {
-	ServerAddress string
-	App           *controllers.App
+	serverAddress string
+	app           *controllers.App
 }
 
 func (s *Server) Run() {
 	router := chi.NewRouter()
 
-	router.Post("/", s.App.HandlerPost)
-	router.Get("/{id}", s.App.HandlerGet)
+	router.Post("/", s.app.HandlerPost)
+	router.Get("/{id}", s.app.HandlerGet)
 
-	http.ListenAndServe(s.ServerAddress, router)
+	err := http.ListenAndServe(s.serverAddress, router)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
 
 func New(srvAd string, a *controllers.App) *Server {
 	return &Server{
-		ServerAddress: srvAd,
-		App:           a,
+		serverAddress: srvAd,
+		app:           a,
 	}
 }

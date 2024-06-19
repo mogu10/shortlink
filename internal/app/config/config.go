@@ -2,20 +2,20 @@ package config
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"strings"
 )
 
-type Options struct {
+type ServiceOptions struct {
 	ServerURL string
 	ShortURL  string
 }
 
-func Get() *Options {
-	options := new(Options)
-	options.ShortURL = getShURL()
-	options.ServerURL = getSrvURL()
+func Get() *ServiceOptions {
+	options := &ServiceOptions{
+		ServerURL: getEnv("SERVER_ADDRESS"),
+		ShortURL:  getEnv("BASE_URL"),
+	}
 
 	serv := ""
 	short := ""
@@ -31,32 +31,19 @@ func Get() *Options {
 		options.ServerURL = serv
 	}
 
-	fmt.Println(options.ServerURL)
-	fmt.Println(options.ShortURL)
 	validateOptions(options)
 
 	return options
 }
 
-func getShURL() string {
-	s, f := os.LookupEnv("BASE_URL")
-	if f && s != "" {
-		return s
+func getEnv(key string) string {
+	if value, found := os.LookupEnv(key); found && value != "" {
+		return value
 	}
-
 	return ""
 }
 
-func getSrvURL() string {
-	s, f := os.LookupEnv("SERVER_ADDRESS")
-	if f && s != "" {
-		return s
-	}
-
-	return ""
-}
-
-func validateOptions(options *Options) {
+func validateOptions(options *ServiceOptions) {
 	if !strings.HasSuffix(options.ShortURL, "/") {
 		options.ShortURL += "/"
 	}

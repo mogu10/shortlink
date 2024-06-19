@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var a = App{ShortAddress: "http://localhost:8080/"}
+//var a = App{shortAddress: "http://localhost:8080/"}
 
 func TestPostLink(t *testing.T) {
 	type want struct {
@@ -101,7 +101,9 @@ func TestGetLink(t *testing.T) {
 			// создаём новый Recorder
 			w := httptest.NewRecorder()
 
-			a.HandlerGet(w, request)
+			app := New("http://localhost:8080/")
+
+			app.HandlerGet(w, request)
 
 			res := w.Result()
 
@@ -130,7 +132,8 @@ func createPostLinkRequest(url string) (*httptest.ResponseRecorder, error) {
 
 	w := httptest.NewRecorder()
 
-	a.HandlerPost(w, request)
+	app := New("http://localhost:8080/")
+	app.HandlerPost(w, request)
 
 	return w, nil
 }

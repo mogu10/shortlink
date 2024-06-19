@@ -8,11 +8,10 @@ import (
 
 func main() {
 	options := config.Get()
-	//options := config.ParseArgs()
 
-	a := controllers.New(options.ShortURL)
-	s := server.New(options.ServerURL, a)
+	application := controllers.New(options.ShortURL)
+	serv := server.New(options.ServerURL, application)
 
 	// запуск сервера
-	s.Run()
+	serv.Run()
 }

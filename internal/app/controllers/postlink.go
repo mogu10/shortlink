@@ -17,17 +17,20 @@ func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
 
 	// вытаскиваем body из реквеста
 	body, err := io.ReadAll(request.Body)
+	request.Body.Close()
 
 	if err != nil {
 		http.Error(writer, "Something wrong with body", http.StatusBadRequest)
+		return
 	}
 
 	short, err := createShortLink(body)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	link := a.ShortAddress + (string(short))
+	link := a.shortAddress + (string(short))
 
 	writer.WriteHeader(http.StatusCreated)
 	writer.Header().Add("Content-Type", "text/plain")
@@ -35,7 +38,7 @@ func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
 }
 
 func createShortLink(body []byte) ([]byte, error) {
-	shortHash := service.Do(body)
+	shortHash := service.HashText(body)
 	err := storage.SaveLink(shortHash, body)
 
 	if err != nil {

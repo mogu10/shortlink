@@ -1,11 +1,11 @@
 package controllers
 
 type App struct {
-	ShortAddress string
+	shortAddress string
 }
 
 func New(shAd string) *App {
 	return &App{
-		ShortAddress: shAd,
+		shortAddress: shAd,
 	}
 }
