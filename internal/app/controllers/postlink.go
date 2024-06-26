@@ -1,13 +1,13 @@
 package controllers
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/mogu10/shortlink/internal/app/service"
+	"github.com/mogu10/shortlink/internal/app/storage"
 	"io"
 	"log"
 	"net/http"
-
-	"github.com/mogu10/shortlink/internal/app/storage"
 )
 
 func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
@@ -38,13 +38,25 @@ func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
 }
 
 func (a *App) HandlerPostJson(writer http.ResponseWriter, request *http.Request) {
-	decoder := json.NewDecoder(request.Body)
+	var buf bytes.Buffer
+	var requestFiels RequestFields
+
+	_, err := buf.ReadFrom(request.Body)
 	defer request.Body.Close()
 
-	requestJson := RequestFields{Url: ""}
+	if err != nil {
+		http.Error(writer, "Something wrong with body", http.StatusBadRequest)
+		return
+	}
 
-	decoder.Decode(&requestJson.Url)
-	short, err := createShortLink([]byte(requestJson.Url))
+	if err = json.Unmarshal(buf.Bytes(), &requestFiels); err != nil {
+		http.Error(writer, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	log.Println("requestJson.Url: " + requestFiels.Url)
+	short, err := createShortLink([]byte(requestFiels.Url))
+
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return

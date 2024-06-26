@@ -83,7 +83,7 @@ func TestPostLinkJson(t *testing.T) {
 			name:  "positive test #1",
 			url:   "https://yandex.ru",
 			route: "http://localhost:8080/",
-			short: "{\"result\":\"http://localhost:8080/d41d8cd9\"}",
+			short: "{\"result\":\"http://localhost:8080/e9db20b2\"}",
 			want: want{
 				code:        201,
 				response:    `{"status":"ok"}`,
