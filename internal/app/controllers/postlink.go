@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/mogu10/shortlink/internal/app/service"
 	"io"
 	"log"
@@ -12,9 +11,17 @@ import (
 )
 
 func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
-	body, err := getBodyFromRequest(request)
+	if request.Method != http.MethodPost {
+		http.Error(writer, "Only POST allowed", http.StatusBadRequest)
+		return
+	}
+
+	body, err := io.ReadAll(request.Body)
+	request.Body.Close()
+
 	if err != nil {
-		http.Error(writer, err.Error(), http.StatusBadRequest)
+		http.Error(writer, "Something wrong with body", http.StatusBadRequest)
+		return
 	}
 
 	short, err := createShortLink(body)
@@ -63,19 +70,4 @@ func createShortLink(text []byte) ([]byte, error) {
 	log.Println("сохранена пара: " + shortHash + " - " + string(text))
 
 	return []byte(shortHash), nil
-}
-
-func getBodyFromRequest(request *http.Request) ([]byte, error) {
-	if request.Method != http.MethodPost {
-		return nil, errors.New("only POST allowed")
-	}
-
-	body, err := io.ReadAll(request.Body)
-	request.Body.Close()
-
-	if err != nil {
-		return nil, errors.New("something wrong with body")
-	}
-
-	return body, nil
 }
