@@ -21,13 +21,13 @@ func TestPostLink(t *testing.T) {
 	tests := []struct {
 		name  string
 		want  want
-		url   string
+		URL   string
 		short string
 		route string
 	}{
 		{
 			name:  "positive test #1",
-			url:   "https://yandex.ru",
+			URL:   "https://yandex.ru",
 			route: "http://localhost:8080/",
 			short: "http://localhost:8080/e9db20b2",
 			want: want{
@@ -42,7 +42,7 @@ func TestPostLink(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			// делаем тестовый POST запрос
 
-			body := strings.NewReader(test.url)
+			body := strings.NewReader(test.URL)
 			w, err := createPostLinkRequest(body, test.route)
 			if err != nil {
 				t.Fatal(err)
@@ -66,7 +66,7 @@ func TestPostLink(t *testing.T) {
 	}
 }
 
-func TestPostLinkJson(t *testing.T) {
+func TestPostLinkJSON(t *testing.T) {
 	type want struct {
 		code        int
 		response    string
@@ -75,19 +75,19 @@ func TestPostLinkJson(t *testing.T) {
 	tests := []struct {
 		name  string
 		want  want
-		url   string
+		URL   string
 		short string
 		route string
 	}{
 		{
 			name:  "positive test #1",
-			url:   "https://yandex.ru",
+			URL:   "https://yandex.ru",
 			route: "http://localhost:8080/",
 			short: "{\"result\":\"http://localhost:8080/e9db20b2\"}",
 			want: want{
 				code:        201,
 				response:    `{"status":"ok"}`,
-				contentType: "application/json; charset=utf-8",
+				contentType: "application/json",
 			},
 		},
 	}
@@ -100,10 +100,10 @@ func TestPostLinkJson(t *testing.T) {
 				Url string `json:"url"`
 			}
 
-			jsBody, _ := json.Marshal(jsonBody{Url: test.url})
+			jsBody, _ := json.Marshal(jsonBody{Url: test.URL})
 
 			body := strings.NewReader(string(jsBody))
-			w, err := createPostLinkRequestJson(body, test.route)
+			w, err := createPostLinkRequestJSON(body, test.route)
 
 			if err != nil {
 				t.Fatal(err)
@@ -204,9 +204,9 @@ func createPostLinkRequest(body *strings.Reader, route string) (*httptest.Respon
 	return w, nil
 }
 
-func createPostLinkRequestJson(body *strings.Reader, route string) (*httptest.ResponseRecorder, error) {
+func createPostLinkRequestJSON(body *strings.Reader, route string) (*httptest.ResponseRecorder, error) {
 	request := httptest.NewRequest(http.MethodPost, "/api/shorten", body)
-	request.Header.Set("Content-Type", "text/plain")
+	request.Header.Set("Content-Type", "application/json; charset=utf-8")
 
 	w := httptest.NewRecorder()
 

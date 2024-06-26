@@ -32,8 +32,8 @@ func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
 
 	link := a.shortAddress + (string(short))
 
-	writer.WriteHeader(http.StatusCreated)
 	writer.Header().Add("Content-Type", "text/plain")
+	writer.WriteHeader(http.StatusCreated)
 	writer.Write([]byte(link))
 }
 
@@ -69,8 +69,8 @@ func (a *App) HandlerPostJSON(writer http.ResponseWriter, request *http.Request)
 		return
 	}
 
+	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusCreated)
-	writer.Header().Add("Content-Type", "application/json; charset=utf-8")
 	writer.Write(response)
 }
 
