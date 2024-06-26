@@ -19,6 +19,8 @@ func (s *Server) Run() {
 	router := chi.NewRouter()
 
 	router.Post("/", logger.RequestLogger(s.app.HandlerPost))
+	router.Post("/api/shorten", logger.RequestLogger(s.app.HandlerPostJson))
+
 	router.Get("/{id}", logger.RequestLogger(s.app.HandlerGet))
 
 	err := http.ListenAndServe(s.serverAddress, router)
