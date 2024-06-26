@@ -97,10 +97,10 @@ func TestPostLinkJSON(t *testing.T) {
 			// делаем тестовый POST запрос
 
 			type jsonBody struct {
-				Url string `json:"url"`
+				URL string `json:"url"`
 			}
 
-			jsBody, _ := json.Marshal(jsonBody{Url: test.URL})
+			jsBody, _ := json.Marshal(jsonBody{URL: test.URL})
 
 			body := strings.NewReader(string(jsBody))
 			w, err := createPostLinkRequestJSON(body, test.route)
