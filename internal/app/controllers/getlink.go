@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/mogu10/shortlink/internal/app/storage"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -23,6 +24,9 @@ func (a *App) HandlerGet(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	link, err := storage.LoadLink([]byte(path))
+
+	log.Println("Найдена пара значений: " + string(link) + " - " + path)
+
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
