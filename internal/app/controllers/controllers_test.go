@@ -136,13 +136,13 @@ func TestGetLink(t *testing.T) {
 	tests := []struct {
 		name  string
 		want  want
-		url   string
+		URL   string
 		short string
 		route string
 	}{
 		{
 			name:  "positive test #1",
-			url:   "https://yandex.ru",
+			URL:   "https://yandex.ru",
 			route: "http://localhost:8080/",
 			short: "e9db20b2",
 			want: want{
@@ -155,7 +155,7 @@ func TestGetLink(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// делаем тестовый POST запрос
-			body := strings.NewReader(test.url)
+			body := strings.NewReader(test.URL)
 			_, err := createPostLinkRequest(body, test.route)
 
 			if err != nil {
@@ -182,7 +182,7 @@ func TestGetLink(t *testing.T) {
 			resBody, err := io.ReadAll(res.Body)
 
 			//проверяем, что в теле содержится исходная ссылка
-			assert.Contains(t, string(resBody), test.url)
+			assert.Contains(t, string(resBody), test.URL)
 
 			header := w.Header()
 
@@ -211,7 +211,7 @@ func createPostLinkRequestJson(body *strings.Reader, route string) (*httptest.Re
 	w := httptest.NewRecorder()
 
 	app := New(route)
-	app.HandlerPostJson(w, request)
+	app.HandlerPostJSON(w, request)
 
 	return w, nil
 }

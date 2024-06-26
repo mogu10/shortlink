@@ -37,7 +37,7 @@ func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
 	writer.Write([]byte(link))
 }
 
-func (a *App) HandlerPostJson(writer http.ResponseWriter, request *http.Request) {
+func (a *App) HandlerPostJSON(writer http.ResponseWriter, request *http.Request) {
 	var buf bytes.Buffer
 	var requestFiels RequestFields
 
@@ -54,8 +54,7 @@ func (a *App) HandlerPostJson(writer http.ResponseWriter, request *http.Request)
 		return
 	}
 
-	log.Println("requestJson.Url: " + requestFiels.Url)
-	short, err := createShortLink([]byte(requestFiels.Url))
+	short, err := createShortLink([]byte(requestFiels.URL))
 
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
@@ -63,12 +62,16 @@ func (a *App) HandlerPostJson(writer http.ResponseWriter, request *http.Request)
 	}
 
 	link := a.shortAddress + (string(short))
-	responseJson := ResponseFields{Result: link}
-	resp, err := json.Marshal(responseJson)
+	responseJSON := ResponseFields{Result: link}
+	response, err := json.Marshal(responseJSON)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	writer.WriteHeader(http.StatusCreated)
 	writer.Header().Add("Content-Type", "application/json; charset=utf-8")
-	writer.Write(resp)
+	writer.Write(response)
 }
 
 func createShortLink(text []byte) ([]byte, error) {
