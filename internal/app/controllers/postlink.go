@@ -82,7 +82,7 @@ func createShortLink(text []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	log.Println("сохранена пара: " + shortHash + " - " + string(text))
+	log.Printf("сохранена пара: %s - %s \r\n", shortHash, string(text))
 
 	return []byte(shortHash), nil
 }

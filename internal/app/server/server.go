@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/mogu10/shortlink/internal/app/controllers"
+	"github.com/mogu10/shortlink/internal/compression"
 	"github.com/mogu10/shortlink/internal/logger"
 	"log"
 	"net/http"
@@ -14,16 +15,21 @@ type Server struct {
 }
 
 func (s *Server) Run() {
+	// инитим логгер
 	logger.Initialize("debug")
 
 	router := chi.NewRouter()
 
-	router.Post("/", logger.RequestLogger(s.app.HandlerPost))
-	router.Post("/api/shorten", logger.RequestLogger(s.app.HandlerPostJSON))
+	router.Post("/", s.app.HandlerPost)
+	router.Post("/api/shorten", s.app.HandlerPostJSON)
 
-	router.Get("/{id}", logger.RequestLogger(s.app.HandlerGet))
+	router.Get("/{id}", s.app.HandlerGet)
 
-	err := http.ListenAndServe(s.serverAddress, router)
+	err := http.ListenAndServe(
+		s.serverAddress,
+		logger.RequestLoggerMV(
+			compression.GzipMV(
+				router)))
 
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
