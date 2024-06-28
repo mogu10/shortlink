@@ -23,6 +23,7 @@ func (a *App) HandlerGet(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	link, err := storage.LoadLink([]byte(path))
+
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
