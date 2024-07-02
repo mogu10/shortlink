@@ -70,7 +70,7 @@ func GzipMV(h http.Handler) http.Handler {
 			finalWriter = compWriter
 			defer compWriter.Close()
 
-			request.Header.Add("Content-Encoding", "gzip")
+			request.Header.Add("Accept-Encoding", "gzip")
 		}
 
 		contentEncoding := request.Header.Get("Content-Encoding")
