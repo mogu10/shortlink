@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/mogu10/shortlink/internal/app/controllers"
+	"github.com/mogu10/shortlink/internal/compression"
 	"github.com/mogu10/shortlink/internal/logger"
 	"log"
 	"net/http"
@@ -27,8 +28,10 @@ func (s *Server) Run() {
 	err := http.ListenAndServe(
 		s.serverAddress,
 		logger.RequestLoggerMV(
-			//compression.GzipMV(
-			router))
+			compression.GzipMV(
+				router),
+		),
+	)
 
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
