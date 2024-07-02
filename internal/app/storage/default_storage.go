@@ -4,13 +4,15 @@ import "errors"
 
 var links = make(map[string]string)
 
-func SaveLink(hash string, body []byte) error {
+type DefaultStorage struct{}
+
+func (stge *DefaultStorage) SaveLinkToStge(hash string, body []byte) error {
 	links[string(body)] = hash
 
 	return nil
 }
 
-func LoadLink(hash []byte) ([]byte, error) {
+func (stge *DefaultStorage) GetLinkFromStge(hash []byte) ([]byte, error) {
 
 	h := string(hash)
 	if h == "" {

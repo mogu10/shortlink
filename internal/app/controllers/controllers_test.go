@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/mogu10/shortlink/internal/app/storage"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -168,7 +169,8 @@ func TestGetLink(t *testing.T) {
 			// создаём новый Recorder
 			w := httptest.NewRecorder()
 
-			app := New("http://localhost:8080/")
+			s, _ := storage.InitDefaultStorage()
+			app := New("http://localhost:8080/", s)
 
 			app.HandlerGet(w, request)
 
@@ -197,8 +199,8 @@ func createPostLinkRequest(body *strings.Reader, route string) (*httptest.Respon
 	request.Header.Set("Content-Type", "text/plain")
 
 	w := httptest.NewRecorder()
-
-	app := New(route)
+	s, _ := storage.InitDefaultStorage()
+	app := New(route, s)
 	app.HandlerPost(w, request)
 
 	return w, nil
@@ -210,7 +212,8 @@ func createPostLinkRequestJSON(body *strings.Reader, route string) (*httptest.Re
 
 	w := httptest.NewRecorder()
 
-	app := New(route)
+	s, _ := storage.InitDefaultStorage()
+	app := New(route, s)
 	app.HandlerPostJSON(w, request)
 
 	return w, nil

@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/mogu10/shortlink/internal/app/service"
-	"github.com/mogu10/shortlink/internal/app/storage"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -24,7 +22,7 @@ func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	short, err := createShortLink(body)
+	short, err := a.createShortLink(body)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
@@ -54,7 +52,7 @@ func (a *App) HandlerPostJSON(writer http.ResponseWriter, request *http.Request)
 		return
 	}
 
-	short, err := createShortLink([]byte(requestFiels.URL))
+	short, err := a.createShortLink([]byte(requestFiels.URL))
 
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
@@ -74,15 +72,13 @@ func (a *App) HandlerPostJSON(writer http.ResponseWriter, request *http.Request)
 	writer.Write(response)
 }
 
-func createShortLink(text []byte) ([]byte, error) {
+func (a *App) createShortLink(text []byte) ([]byte, error) {
 	shortHash := service.HashText(text)
-	err := storage.SaveLink(shortHash, text)
+	err := a.storage.SaveLinkToStge(shortHash, text)
 
 	if err != nil {
 		return nil, err
 	}
-
-	log.Printf("сохранена пара: %s - %s \r\n", shortHash, string(text))
 
 	return []byte(shortHash), nil
 }
