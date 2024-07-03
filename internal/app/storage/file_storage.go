@@ -87,7 +87,7 @@ func (p *storageWriter) writeRecord(rec *URLRecord) error {
 	if err != nil {
 		return err
 	}
-	// добавляем перенос строки
+
 	data = append(data, '\n')
 
 	_, err = p.file.Write(data)
