@@ -17,6 +17,9 @@ type Server struct {
 func (s *Server) Run() {
 	// инитим логгер
 	l, err := logger.Initialize("debug")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	router := chi.NewRouter()
 
