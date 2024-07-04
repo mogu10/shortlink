@@ -40,15 +40,15 @@ func newCompressReader(reader io.ReadCloser) (*compressReader, error) {
 	}, nil
 }
 
-func (c compressWriter) Header() http.Header {
+func (c *compressWriter) Header() http.Header {
 	return c.writer.Header()
 }
 
-func (c compressWriter) Write(bytes []byte) (int, error) {
+func (c *compressWriter) Write(bytes []byte) (int, error) {
 	return c.gzipWriter.Write(bytes)
 }
 
-func (c compressWriter) WriteHeader(statusCode int) {
+func (c *compressWriter) WriteHeader(statusCode int) {
 	if statusCode < 300 {
 		c.writer.Header().Set("Content-Encoding", "gzip")
 	}

@@ -16,7 +16,7 @@ type Server struct {
 
 func (s *Server) Run() {
 	// инитим логгер
-	logger.Initialize("debug")
+	l, err := logger.Initialize("debug")
 
 	router := chi.NewRouter()
 
@@ -25,9 +25,9 @@ func (s *Server) Run() {
 
 	router.Get("/{id}", s.app.HandlerGet)
 
-	err := http.ListenAndServe(
+	err = http.ListenAndServe(
 		s.serverAddress,
-		logger.RequestLoggerMV(
+		l.RequestLoggerMV(
 			compression.GzipMV(
 				router),
 		),

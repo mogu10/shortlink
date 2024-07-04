@@ -2,13 +2,12 @@ package logger
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 
 	"go.uber.org/zap"
 )
 
-var Log *zap.Logger = zap.NewNop()
+//var Log *zap.Logger = zap.NewNop()
 
 type (
 	// берём структуру для хранения сведений об ответе
@@ -21,6 +20,10 @@ type (
 	loggingResponseWriter struct {
 		http.ResponseWriter // встраиваем оригинальный http.ResponseWriter
 		responseData        *responseData
+	}
+
+	ZapLogger struct {
+		log *zap.Logger
 	}
 )
 
@@ -37,10 +40,10 @@ func (r *loggingResponseWriter) WriteHeader(statusCode int) {
 	r.responseData.status = statusCode // захватываем код статуса
 }
 
-func Initialize(level string) error {
+func Initialize(level string) (ZapLogger, error) {
 	lvl, err := zap.ParseAtomicLevel(level)
 	if err != nil {
-		return err
+		return ZapLogger{}, err
 	}
 
 	cfg := zap.NewProductionConfig()
@@ -48,14 +51,13 @@ func Initialize(level string) error {
 
 	zl, err := cfg.Build()
 	if err != nil {
-		return err
+		return ZapLogger{}, err
 	}
 
-	Log = zl
-	return nil
+	return ZapLogger{log: zl}, err
 }
 
-func RequestLoggerMV(h http.Handler) http.Handler {
+func (z *ZapLogger) RequestLoggerMV(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
@@ -70,10 +72,10 @@ func RequestLoggerMV(h http.Handler) http.Handler {
 
 		h.ServeHTTP(&lw, r)
 		duration := time.Since(start)
-		Log.Debug("got incoming HTTP request",
+		z.log.Debug("got incoming HTTP request",
 			zap.String("path", r.URL.Path),
 			zap.String("method", r.Method),
-			zap.String("duration", strconv.FormatInt(int64(duration), 10)),
+			zap.String("duration", duration.String()),
 			zap.Int("status", responseData.status),
 			zap.Int("size", responseData.size),
 		)

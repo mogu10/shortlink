@@ -9,22 +9,20 @@ import (
 )
 
 func main() {
-	var st storage.Storage
-	var err error
-
 	options := config.Get()
 
-	if options.StoragePath == "" {
-		st, err = storage.InitDefaultStorage()
-	} else {
-		st, err = storage.InitFileStorage(options.StoragePath)
-	}
+	st, err := func() (storage.Storage, error) {
+		if options.StoragePath == "" {
+			return storage.InitDefaultStorage()
+		}
+		return storage.InitFileStorage(options.StoragePath)
+	}()
 
 	if err != nil {
-		log.Panicf(err.Error())
+		log.Fatal(err.Error())
 	}
 
-	application := controllers.New(options.ShortURL, st)
+	application := controllers.NewApp(controllers.WithShortAddress(options.ShortURL), controllers.WithStorage(st))
 	serv := server.New(options.ServerURL, application)
 
 	// запуск сервера

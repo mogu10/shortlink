@@ -170,7 +170,7 @@ func TestGetLink(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			s, _ := storage.InitDefaultStorage()
-			app := New("http://localhost:8080/", s)
+			app := NewApp(WithShortAddress("http://localhost:8080/"), WithStorage(s))
 
 			app.HandlerGet(w, request)
 
@@ -200,7 +200,7 @@ func createPostLinkRequest(body *strings.Reader, route string) (*httptest.Respon
 
 	w := httptest.NewRecorder()
 	s, _ := storage.InitDefaultStorage()
-	app := New(route, s)
+	app := NewApp(WithShortAddress(route), WithStorage(s))
 	app.HandlerPost(w, request)
 
 	return w, nil
@@ -213,7 +213,7 @@ func createPostLinkRequestJSON(body *strings.Reader, route string) (*httptest.Re
 	w := httptest.NewRecorder()
 
 	s, _ := storage.InitDefaultStorage()
-	app := New(route, s)
+	app := NewApp(WithShortAddress(route), WithStorage(s))
 	app.HandlerPostJSON(w, request)
 
 	return w, nil
