@@ -1,21 +1,19 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/mogu10/shortlink/internal/app/service"
 	"io"
 	"net/http"
-
-	"github.com/mogu10/shortlink/internal/app/storage"
 )
 
 func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
-	// провяем, что метод POST
 	if request.Method != http.MethodPost {
 		http.Error(writer, "Only POST allowed", http.StatusBadRequest)
 		return
 	}
 
-	// вытаскиваем body из реквеста
 	body, err := io.ReadAll(request.Body)
 	request.Body.Close()
 
@@ -24,7 +22,7 @@ func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	short, err := createShortLink(body)
+	short, err := a.createShortLink(body)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
@@ -32,14 +30,51 @@ func (a *App) HandlerPost(writer http.ResponseWriter, request *http.Request) {
 
 	link := a.shortAddress + (string(short))
 
-	writer.WriteHeader(http.StatusCreated)
 	writer.Header().Add("Content-Type", "text/plain")
+	writer.WriteHeader(http.StatusCreated)
 	writer.Write([]byte(link))
 }
 
-func createShortLink(body []byte) ([]byte, error) {
-	shortHash := service.HashText(body)
-	err := storage.SaveLink(shortHash, body)
+func (a *App) HandlerPostJSON(writer http.ResponseWriter, request *http.Request) {
+	var buf bytes.Buffer
+	var requestFiels RequestFields
+
+	_, err := buf.ReadFrom(request.Body)
+	defer request.Body.Close()
+
+	if err != nil {
+		http.Error(writer, "Something wrong with body", http.StatusBadRequest)
+		return
+	}
+
+	if err = json.Unmarshal(buf.Bytes(), &requestFiels); err != nil {
+		http.Error(writer, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	short, err := a.createShortLink([]byte(requestFiels.URL))
+
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	link := a.shortAddress + (string(short))
+	responseJSON := ResponseFields{Result: link}
+	response, err := json.Marshal(responseJSON)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	writer.Header().Add("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusCreated)
+	writer.Write(response)
+}
+
+func (a *App) createShortLink(text []byte) ([]byte, error) {
+	shortHash := service.HashText(text)
+	err := a.storage.SaveLinkToStge(shortHash, text)
 
 	if err != nil {
 		return nil, err

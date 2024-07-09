@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/mogu10/shortlink/internal/app/storage"
 	"net/http"
 	"strings"
 )
@@ -22,7 +21,8 @@ func (a *App) HandlerGet(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	link, err := storage.LoadLink([]byte(path))
+	link, err := a.storage.GetLinkFromStge([]byte(path))
+
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
