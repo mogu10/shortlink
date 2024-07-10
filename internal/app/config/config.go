@@ -7,24 +7,29 @@ import (
 )
 
 type ServiceOptions struct {
-	ServerURL   string
-	ShortURL    string
-	StoragePath string
+	ServerURL          string
+	ShortURL           string
+	StoragePath        string
+	DataBaseConnection string
 }
 
 func Get() *ServiceOptions {
 	options := &ServiceOptions{
-		ServerURL:   getEnv("SERVER_ADDRESS"),
-		ShortURL:    getEnv("BASE_URL"),
-		StoragePath: getEnv("FILE_STORAGE_PATH"),
+		ServerURL:          getEnv("SERVER_ADDRESS"),
+		ShortURL:           getEnv("BASE_URL"),
+		StoragePath:        getEnv("FILE_STORAGE_PATH"),
+		DataBaseConnection: getEnv("DATABASE_DSN"),
 	}
 
 	serv := ""
 	short := ""
 	stgePath := ""
+	dataBase := ""
 	flag.StringVar(&serv, "a", "localhost:8080", "адрес запуска HTTP-сервера")
 	flag.StringVar(&short, "b", "http://localhost:8080/", "базовый адрес результирующего шортлинка")
 	flag.StringVar(&stgePath, "f", "/tmp/short-url-db.json", "путь до файла/хранилища")
+	flag.StringVar(&dataBase, "d", "", "строка с адресом подключения к БД")
+	//flag.StringVar(&dataBase, "d", "host=localhost port=5432 user=postgres password=paketik26 dbname=shortlink sslmode=disable", "строка с адресом подключения к БД")
 	flag.Parse()
 
 	if options.ShortURL == "" {
@@ -37,6 +42,10 @@ func Get() *ServiceOptions {
 
 	if options.StoragePath == "" {
 		options.StoragePath = stgePath
+	}
+
+	if options.DataBaseConnection == "" {
+		options.DataBaseConnection = dataBase
 	}
 
 	validateOptions(options)
