@@ -28,6 +28,8 @@ func (s *Server) Run() {
 
 	router.Get("/{id}", s.app.HandlerGet)
 
+	router.Get("/ping", s.app.PingDB)
+
 	err = http.ListenAndServe(
 		s.serverAddress,
 		l.RequestLoggerMV(

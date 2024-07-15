@@ -6,6 +6,10 @@ var links = make(map[string]string)
 
 type DefaultStorage struct{}
 
+func (stge *DefaultStorage) ConnectionCheck() (bool, error) {
+	return true, nil
+}
+
 func (stge *DefaultStorage) SaveLinkToStge(hash string, body []byte) error {
 	links[string(body)] = hash
 
