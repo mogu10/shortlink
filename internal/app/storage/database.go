@@ -17,8 +17,7 @@ func Connection(strConnection string) (*DataBaseStorage, error) {
 		return nil, err
 	}
 
-	var query *sql.Rows
-	query, err = db.Query("SELECT EXISTS (SELECT * from information_schema.tables WHERE table_name = 'pairs' AND table_schema = 'public')")
+	query, err := db.Query("SELECT EXISTS (SELECT * from information_schema.tables WHERE table_name = 'pairs' AND table_schema = 'public')")
 	if err != nil || query.Err() != nil {
 		return nil, err
 	}
