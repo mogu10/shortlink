@@ -23,7 +23,12 @@ func Connection(strConnection string) (*DataBaseStorage, error) {
 	}
 	defer query.Close()
 	var tableExists bool
-	query.Scan(&tableExists)
+
+	for query.Next() {
+		if err := query.Scan(&tableExists); err != nil {
+			return nil, err
+		}
+	}
 
 	if !tableExists {
 		_, err := db.Exec("CREATE TABLE pairs (id SERIAL PRIMARY KEY, original text, short text, created_at timestamp)")
