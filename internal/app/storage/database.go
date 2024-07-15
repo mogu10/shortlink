@@ -17,6 +17,21 @@ func Connection(strConnection string) (*DataBaseStorage, error) {
 		return nil, err
 	}
 
+	query, err := db.Query("SELECT EXISTS (SELECT * from information_schema.tables WHERE table_name = 'pairs' AND table_schema = 'public')")
+	if err != nil {
+		return nil, err
+	}
+	defer query.Close()
+	var tableExists bool
+	query.Scan(&tableExists)
+
+	if !tableExists {
+		_, err := db.Exec("CREATE TABLE pairs (id SERIAL PRIMARY KEY, original text, short text, created_at timestamp)")
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &DataBaseStorage{db: db}, nil
 }
 

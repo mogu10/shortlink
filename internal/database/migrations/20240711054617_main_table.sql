@@ -4,7 +4,6 @@ CREATE TABLE pairs (
     original text,
     short text,
     created_at timestamp
---     PRIMARY KEY(id)
 );
 
 -- +goose Down
