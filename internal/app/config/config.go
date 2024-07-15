@@ -32,9 +32,9 @@ func Get() *ServiceOptions {
 	short := ""
 	stgePath := ""
 	dataBase := ""
-	flag.StringVar(&serv, "a", "", "адрес запуска HTTP-сервера")
-	flag.StringVar(&short, "b", "", "базовый адрес результирующего шортлинка")
-	flag.StringVar(&stgePath, "f", "", "путь до файла/хранилища")
+	flag.StringVar(&serv, "a", "localhost:8080", "адрес запуска HTTP-сервера")
+	flag.StringVar(&short, "b", "http://localhost:8080/", "базовый адрес результирующего шортлинка")
+	flag.StringVar(&stgePath, "f", "/tmp/short-url-db.json", "путь до файла/хранилища")
 	flag.StringVar(&dataBase, "d", "", "строка с адресом подключения к БД")
 	flag.Parse()
 
