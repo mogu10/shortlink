@@ -7,8 +7,6 @@ import (
 	"go.uber.org/zap"
 )
 
-//var Log *zap.Logger = zap.NewNop()
-
 type (
 	// берём структуру для хранения сведений об ответе
 	responseData struct {

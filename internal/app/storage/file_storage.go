@@ -13,6 +13,10 @@ type FileStorage struct {
 	filePath string
 }
 
+func (stge *FileStorage) ConnectionCheck() (bool, error) {
+	return true, nil
+}
+
 func newFileStorage(storagePath string) (*FileStorage, error) {
 	return &FileStorage{filePath: storagePath}, nil
 }

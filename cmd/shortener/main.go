@@ -13,10 +13,15 @@ func main() {
 	options := config.Get()
 
 	st, err := func() (storage.Storage, error) {
-		if options.StoragePath == "" {
-			return storage.InitDefaultStorage()
+		if options.DataBaseConnection == "" {
+			if options.StoragePath == "" {
+				return storage.InitDefaultStorage()
+			}
+
+			return storage.InitFileStorage(options.StoragePath)
 		}
-		return storage.InitFileStorage(options.StoragePath)
+
+		return storage.Connection(options.DataBaseConnection)
 	}()
 
 	if err != nil {
@@ -25,8 +30,7 @@ func main() {
 
 	application := controllers.NewApp(
 		controllers.WithShortAddress(options.ShortURL),
-		controllers.WithStorage(st),
-		controllers.WithDatabaseConnection(options.DataBaseConnection))
+		controllers.WithStorage(st))
 
 	serv := server.New(options.ServerURL, application)
 
