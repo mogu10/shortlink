@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"log"
 	"time"
 )
 
@@ -17,8 +16,6 @@ func Connection(strConnection string) (*DataBaseStorage, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	log.Println("Открыто подключение к базе", db)
 
 	return &DataBaseStorage{db: db}, nil
 }
@@ -37,7 +34,6 @@ func (stge *DataBaseStorage) SaveLinkToStge(hash string, original []byte) error 
 	createdAt := time.Now()
 	_, err := stge.db.Exec("INSERT INTO pairs (original, short, created_at) VALUES ($1, $2, $3)", string(original), hash, createdAt.Format(time.DateTime))
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 
